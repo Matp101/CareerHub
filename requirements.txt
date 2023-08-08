@@ -1,0 +1,7 @@
+flask
+Flask-SQLAlchemy
+flask-login
+Flask-Paginate
+alembic
+Flask-WTF
+email_validator

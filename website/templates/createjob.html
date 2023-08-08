@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %} - Create Job{% endblock %}
+
+{% block content %}
+  <h1 class="mt-2">Create Job Listing</h1>
+  <form method="POST" class="mb-4">
+    {{ form.hidden_tag() }}
+    <div class="form-group">
+      {{ form.title.label(class="form-label") }}
+      {{ form.title(class="form-control") }}
+      {{ form.company.label(class="form-label") }}
+      {{ form.company(class="form-control") }}
+      {{ form.salary.label(class="form-label") }}
+      {{ form.salary(class="form-control") }}
+      {{ form.location.label(class="form-label") }}
+      {{ form.location(class="form-control") }}
+      {{ form.job_type.label(class="form-label") }}
+      {{ form.job_type(class="form-control") }}
+      {{ form.description.label(class="form-label") }}
+      {{ form.description(class="form-control") }}
+      {{ form.email.label(class="form-label") }}
+      {{ form.email(class="form-control") }}
+      {{ form.category.label(class="form-label") }}
+      {{ form.category(class="form-control") }}
+    </div>
+    <button type="submit" class="btn btn-primary mt-2">Create Job</button>
+  </form>
+{% endblock %}

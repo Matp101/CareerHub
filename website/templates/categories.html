@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block title %} - Categories{% endblock %}
+
+{% block content %}
+
+<!-- Inpage Header -->
+<div class="m-2 align-items-center">
+  <!-- Category Bar -->
+  <div class="container">
+    {% if selected_category %}
+      <div class="mb-4 text-center">
+        <h2>Selected Category: {{ selected_category_name }}</h2>
+      </div>
+    {% endif %}
+    <form method="GET">
+      <div class="form-group">
+        <label for="categorySelect">Select a Category:</label>
+        <div class="d-flex">
+          <select class="form-control" id="categorySelect" name="category">
+            <option value="">All Categories</option>
+            {% for category in categories %}
+              <option value="{{ category.category_id }}"
+                {% if category.category_id == selected_category %}selected{% endif %}
+                {% if category.category_id == selected_category %}class="active"{% endif %}>
+                {{ category.category_name }}
+              </option>
+            {% endfor %}
+          </select>
+          <button type="submit" class="btn btn-primary mx-2">Search</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Sort and Filters Row -->
+  <div class="mt-2 d-flex justify-content-between">
+    <!-- Filters -->
+    <button class="btn btn-primary d-flex justify-content-start" type="button" data-toggle="collapse" data-target="#filterCollapse" aria-expanded="false" aria-controls="filterCollapse">
+      Filter Options
+    </button>
+    <!-- Sort -->
+    <div class="d-flex justify-content-end">
+      <div class="dropdown">
+        <button class="btn btn-secondary dropdown-toggle" type="button" id="sortDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          {% if sort == 'most_money' %}
+            Sort By: Highest Salary
+          {% elif sort == 'least_money' %}
+            Sort By: Lowest Salary
+          {% elif sort %}
+            Sort By: {{ sort|capitalize }}
+          {% else %}
+            Sort By: Newest
+          {% endif %}
+        </button>
+        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="sortDropdown">
+          <a class="dropdown-item {% if sort == 'newest' %}active{% endif %}" href="?sort=newest&category={{ selected_category|default('') }}&min_salary={{ filters.min_salary|default('') }}&max_salary={{ filters.max_salary|default('') }}&posted_after={{ filters.posted_after|default('') }}&posted_before={{ filters.posted_before|default('') }}&job_type_filter={{ filters.job_type_filter|default('') }}">Newest</a>
+          <a class="dropdown-item {% if sort == 'oldest' %}active{% endif %}" href="?sort=oldest&category={{ selected_category|default('') }}&min_salary={{ filters.min_salary|default('') }}&max_salary={{ filters.max_salary|default('') }}&posted_after={{ filters.posted_after|default('') }}&posted_before={{ filters.posted_before|default('') }}&job_type_filter={{ filters.job_type_filter|default('') }}">Oldest</a>
+          <a class="dropdown-item {% if sort == 'most_money' %}active{% endif %}" href="?sort=most_money&category={{ selected_category|default('') }}&min_salary={{ filters.min_salary|default('') }}&max_salary={{ filters.max_salary|default('') }}&posted_after={{ filters.posted_after|default('') }}&posted_before={{ filters.posted_before|default('') }}&job_type_filter={{ filters.job_type_filter|default('') }}">Highest Salary</a>
+          <a class="dropdown-item {% if sort == 'least_money' %}active{% endif %}" href="?sort=least_money&category={{ selected_category|default('') }}&min_salary={{ filters.min_salary|default('') }}&max_salary={{ filters.max_salary|default('') }}&posted_after={{ filters.posted_after|default('') }}&posted_before={{ filters.posted_before|default('') }}&job_type_filter={{ filters.job_type_filter|default('') }}">Lowest Salary</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Filter Collapse -->
+  <div class="collapse mt-2 border border-2 rounded-bottom" id="filterCollapse">
+    <form method="GET" class="m-2" action="{{ url_for('views.categories') }}" id="filterForm">
+      <input type="hidden" name="category" value="{{ request.args.get('category', '') }}">
+      <input type="hidden" name="sort" value="{{ request.args.get('sort', 'Newest') }}">
+      <div class="form-group row">
+        <div class="col-md-6">
+          <label for="minSalary">Min Salary:</label>
+          <input type="number" class="form-control" id="minSalary" name="min_salary" {% if request.args.get('min_salary') %} value="{{ request.args.get('min_salary') }}" {% endif %} placeholder="Min Salary">
+        </div>
+        <div class="col-md-6">
+          <label for="maxSalary">Max Salary:</label>
+          <input type="number" class="form-control" id="maxSalary" name="max_salary" {% if request.args.get('max_salary') %} value="{{ request.args.get('max_salary') }}" {% endif %} placeholder="Max Salary">
+        </div>
+      </div>
+      <div class="form-group row">
+        <div class="col-md-6">
+          <label for="postedAfter">Posted After:</label>
+          <input type="date" class="form-control" id="postedAfter" name="posted_after" {% if request.args.get('posted_after') %} value="{{ request.args.get('posted_after') }}" {% endif %}>
+        </div>
+        <div class="col-md-6">
+          <label for="postedBefore">Posted Before:</label>
+          <input type="date" class="form-control" id="postedBefore" name="posted_before" {% if request.args.get('posted_before') %} value="{{ request.args.get('posted_before') }}" {% endif %}>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="jobTypeFilter">Job Type:</label>
+        <select class="form-control" id="jobTypeFilter" name="job_type_filter">
+          <option value="">All Types</option>
+          <option value="Full-Time" {% if request.args.get('job_type_filter') == 'Full-Time' %}selected{% endif %}>Full-Time</option>
+          <option value="Part-Time" {% if request.args.get('job_type_filter') == 'Part-Time' %}selected{% endif %}>Part-Time</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary mt-2">Apply Filters</button>
+      <button type="button" class="btn btn-secondary mt-2" id="clearFilters">Clear Filters</button>
+    </form>
+  </div>
+  <!-- End Sort and Filters Row -->
+</div>
+  
+<!-- Job Listings -->
+<div class="row mt-2">
+  {% for job in job_listings.items %}
+    <div class="col-md-6 mb-4">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">{{ job.title }}</h5>
+          <h6 class="card-subtitle mb-2 text-muted">{{ job.company }}</h6>
+          <p class="card-text">{{ job.description }}</p>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item"><strong>Location:</strong> {{ job.location }}</li>
+            <li class="list-group-item"><strong>Type:</strong> {{ job.type }}</li>
+            <li class="list-group-item"><strong>Salary:</strong> {{ job.salary | format_salary }}</li>
+            <li class="list-group-item"><strong>Date Posted:</strong> {{ job.date_posted.strftime('%Y-%m-%d') }}</li>
+          </ul>
+          {% if current_user.is_authenticated %}
+            <a href="mailto:{{ job.email }}?subject=Job%20Application%20-%20{{ job.emailtitle }}&body=Dear%20Hiring%20Manager,%0D%0A%0D%0AI%20would%20like%20to%20apply%20for%20the%20{{ job.emailtitle }}%20position%20at%20{{ job.emailcompany }}.%20Please%20find%20my%20resume%20attached.%0D%0A%0D%0AThank%20you,%0D%0A{{ current_user.first_name if current_user.first_name else 'Your%20Name' }}" class="btn btn-primary">Apply Now</a>
+          {% else %}
+            <a href="mailto:{{ job.email }}?subject=Job%20Application%20-%20{{ job.emailtitle }}&body=Dear%20Hiring%20Manager,%0D%0A%0D%0AI%20would%20like%20to%20apply%20for%20the%20{{ job.emailtitle }}%20position%20at%20{{ job.emailcompany }}.%20Please%20find%20my%20resume%20attached.%0D%0A%0D%0AThank%20you,%0D%0AYour%20Name" class="btn btn-primary">Apply Now</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+
+<!-- Pagination -->
+<nav aria-label="Page navigation">
+  <ul class="pagination justify-content-center">
+    {% if job_listings.has_prev %}
+      <li class="page-item"><a class="page-link" href="?category={{ selected_category|default('') }}&min_salary={{ filters.min_salary|default('') }}&max_salary={{ filters.max_salary|default('') }}&posted_after={{ filters.posted_after|default('') }}&posted_before={{ filters.posted_before|default('') }}&job_type_filter={{ filters.job_type_filter|default('') }}&page=1">First</a></li>
+      <li class="page-item"><a class="page-link" href="?category={{ selected_category|default('') }}&min_salary={{ filters.min_salary|default('') }}&max_salary={{ filters.max_salary|default('') }}&posted_after={{ filters.posted_after|default('') }}&posted_before={{ filters.posted_before|default('') }}&job_type_filter={{ filters.job_type_filter|default('') }}&page={{ job_listings.prev_num }}">Previous</a></li>
+    {% endif %}
+
+    {% for num in job_listings.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+      {% if num %}
+        {% if num != job_listings.page %}
+          <li class="page-item"><a class="page-link" href="?category={{ selected_category|default('') }}&min_salary={{ filters.min_salary|default('') }}&max_salary={{ filters.max_salary|default('') }}&posted_after={{ filters.posted_after|default('') }}&posted_before={{ filters.posted_before|default('') }}&job_type_filter={{ filters.job_type_filter|default('') }}&page={{ num }}">{{ num }}</a></li>
+        {% else %}
+          <li class="page-item active" aria-current="page"><span class="page-link">{{ num }}</span></li>
+        {% endif %}
+      {% endif %}
+    {% endfor %}
+
+    {% if job_listings.has_next %}
+      <li class="page-item"><a class="page-link" href="?category={{ selected_category|default('') }}&min_salary={{ filters.min_salary|default('') }}&max_salary={{ filters.max_salary|default('') }}&posted_after={{ filters.posted_after|default('') }}&posted_before={{ filters.posted_before|default('') }}&job_type_filter={{ filters.job_type_filter|default('') }}&page={{ job_listings.next_num }}">Next</a></li>
+      <li class="page-item"><a class="page-link" href="?category={{ selected_category|default('') }}&min_salary={{ filters.min_salary|default('') }}&max_salary={{ filters.max_salary|default('') }}&posted_after={{ filters.posted_after|default('') }}&posted_before={{ filters.posted_before|default('') }}&job_type_filter={{ filters.job_type_filter|default('') }}&page={{ job_listings.pages }}">Last</a></li>
+    {% endif %}
+  </ul>
+</nav>
+{% endblock %}
