@@ -1,7 +1,7 @@
 # Career Hub
 
 ### Disclaimer
-This has only been run on a linux machine, so it may not work on other operating systems.\
+This has only been run on a linux machine, so it may not work on other operating systems.
 
 ### Installation
 I have created a docker container that should work on any operating system.\
@@ -19,7 +19,7 @@ This is a job search website that allows users to search for jobs by type, salar
 ## Contribute
 
 Make sure you have Python 3.8 or above (and pip) installed.
-Run the following commands to install the dependencies
+Run the following commands to install the dependencies.
 
 ```bash
 pip install -r requirements.txt
