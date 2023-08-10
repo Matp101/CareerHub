@@ -29,31 +29,21 @@ pip install -r requirements.txt
 
 The splash page of the website is the latest jobs from all users. Users can also login or sign up.
 
-[comment]: <> (![image]())
-
 ## Sign Up Page
 
 The page where new users can register a new user into the database.
-
-[comment]: <> (![image]())
 
 ## Home Page
 
 This is the main page where users can view all the jobs posted by all users. Users can also search for jobs by title or company as well as sign up, login or logout.
 
-[comment]: <> (![image]())
-
 ## Categories Page
 
 This page allows users to search for jobs by category. They can also filter by salary, date posted and type or sort by newset, oldest, highest or lowest salary.
 
-[comment]: <> (![image]())
-
 ## Search Page
 
 This page allows users to search for jobs by title or company. They can also filter by salary, date posted and type or sort by newset, oldest, most or least money.
-
-[comment]: <> (![image]())
 
 # Challenges
 
